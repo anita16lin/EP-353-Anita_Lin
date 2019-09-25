@@ -1,6 +1,8 @@
 # Problem Set 2
 Submitted by: Anita Lin
+
 For Course: EP 353 Audio Programming in C by Akito Van Troyer
+
 Due Date: September 26, 2019 11:59:59 PM
 
 ## Files Included
@@ -15,7 +17,7 @@ Due Date: September 26, 2019 11:59:59 PM
 9. Problem Set 2.4
 
 ## Purpose
-Complete the questions in the weekly problem set in order to practice concpets learned in class.
+Complete the questions in the weekly problem set in order to practice concepts learned in class.
 
 ## Build and Run Commands
 Special commands used were bool, math.h, and pow.
