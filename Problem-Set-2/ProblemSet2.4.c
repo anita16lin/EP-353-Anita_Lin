@@ -1,5 +1,7 @@
+//initialization
 #include <stdio.h>
 
+//the equation is t = 1/bpm = 60000 ms/bpm
 int main(){
     int bpm;
     int bps;
