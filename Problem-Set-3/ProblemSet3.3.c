@@ -1,14 +1,28 @@
 #include <stdio.h>
 //Declare the function
-int findPrimeNumber(int,int);
+int findPrimeNumber(int);
 
 //Define the function so we can call it
-int findPrimeNumber(int a, int b){
-    return a + b;
-}
+int findPrimeNumber(int n){
+    int j, flag = 1;
 
+    for(j=2; j<= n/2; j++){
+        if (n%j == 0){
+            flag = 0;
+            break;
+        }
+    }
+    return flag;
+}
+//Run it through main
 int main(){
-    
+    int i, flag;
+
+    for(i=2; i<1000; i++){
+        flag = findPrimeNumber(i);
+        if(flag == 1)
+            printf("%d\n", i);
+    }
     return 0;
 }
 
