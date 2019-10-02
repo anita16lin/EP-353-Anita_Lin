@@ -28,5 +28,5 @@ I used several online resources as well as the powerpoints from class. I also us
 For this problem set, I used the sites listed below:
 http://www.asciitable.com/
 https://www.programiz.com/c-programming/examples/prime-interval-function
-tutorialspoint.com/c_standard_library/c_function_sin.htm
+https://tutorialspoint.com/c_standard_library/c_function_sin.htm 
 https://www.programmingsimplified.com/c/source-code/c-program-for-prime-number
