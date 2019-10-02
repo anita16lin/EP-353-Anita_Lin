@@ -26,3 +26,6 @@ int main(){
     return 0;
 }
 
+//modulo =0 means that it's not a prime number
+//flag =0 declares that it's not a prime number
+//https://www.programiz.com/c-programming/examples/prime-interval-function
