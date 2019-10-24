@@ -24,7 +24,7 @@ Special commands used were malloc and atoi
 
 ## Caveats
 I didn't get the 3rd one fully working because I wasn't sure how to integrate atoi and count the 
-cases where there were 2 integers like 99. I did get the 100 to work nicely. 
+cases where there were 2 integers like 99. I did get the comma counting to work nicely. 
 
 ## Acknowledgements
 Claude, Edward and I worked on this together in study sessions. We brainstormed and helped each other. 
