@@ -10,4 +10,5 @@ In this folder you will find all the files for the final project. For deliverabl
 **Made by Anita Lin**
 
 Berklee College of Music
+
 EP 353 - Audio Programming in C
