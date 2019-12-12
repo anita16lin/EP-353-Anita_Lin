@@ -6,4 +6,5 @@ Welcome to the **C & Csound Granularizer**! This is the design document for this
 **Made by Anita Lin**
 
 Berklee College of Music
+
 EP 353 - Audio Programming in C

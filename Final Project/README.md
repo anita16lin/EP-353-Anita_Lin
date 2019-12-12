@@ -1,5 +1,6 @@
 # Final Project
 EP 353 - Audio Programming in C
+
 By: Anita Lin
 
 ## C & Csound Granularizer
