@@ -21,7 +21,7 @@ int main() {
 
 	//insert contents of orchestra file
 	FILE *orc;
-	if ((orc = fopen("final-houge.orc", "r")) == NULL) {
+	if ((orc = fopen("AudioFile.orc", "r")) == NULL) {
 		printf("can't open file\n");
 		return 1;
 	} else {
@@ -38,9 +38,23 @@ int main() {
 	fprintf(csd, "<CsScore>\n");
 	//manually printing the function tables required by the instruments
 	//(see Csound documentation for more info)
+    //Function 1 uses the GEN10 subroutine to compute a sine wave
+    //Function 2 uses the GEN10 subroutine to compute the first sixteen partials of a sawtooth wave
+    //Function 3 uses the GEN20 subroutine to compute a Hanning window for use as a grain envelope
+    //Function 4 uses the GEN01 subroutine to read in an AIF audio file
+    //Function 5 uses the GEN01 subroutine to read in annother AIF audio file
+    //Function 6 uses the GEN07 subroutine to compute a linear AR "GATE" envelope function
+    //Function 7 uses the GEN07 subroutine to compute a linear ADSR envelope function
+    //Function 8 uses the GEN05 subroutine to compute an exponential ADSR envelope function
 	fprintf(csd, "f1 0 4096 10 1\n");
 	fprintf(csd, "f2 0 4096 19 0.5 1 0 0\n");
-	fprintf(csd, "s\n");
+	fprintf(csd, "f3 0 4097 20 2 1\n");
+    fprintf(csd, "f4 0 0 1 \"sing.aif\" 0 0 0\n");
+    fprintf(csd, "f5 0 0 1 \"hellorcb.aif\" 0 0 0\n");
+    fprintf(csd, "f6 0 1024 7 0 10 1 1000 1 14 0\n");
+    fprintf(csd, "f7 0 1024 7 0 128 1 128 .6 512 .6 256 0\n");
+    fprintf(csd, "f8 0 1024 5 .01 256 1 192 .5 256 .5 64 .01\n");
+    fprintf(csd, "s\n");
 
 	//you can set up a tendency mask by defining two lines that indicate an upper and lower boundary for some variable
 	//these lines can be defined as a list of breakpoints (coordinates)
@@ -152,7 +166,7 @@ int main() {
 								{-1, -1} };
     
     //Start and End Time for Instr 101
-    float maxGrainTime1 = 5.; //give us 10 seconds of sound
+    float maxGrainTime1 = 10.; //give us 10 seconds of sound
 	float currentTime1 = 0.; //first grain at time 0.
 	
     //Start and End Time for Instr 102
@@ -161,7 +175,7 @@ int main() {
     
     //Declare variables in Csound
     float startTime, duration, volume, carFreq, modFreq, indexOfModulation, cToM, pan, density;
-    
+    /*
     //For Instr 101 - Sine Grain	
 	fprintf(csd, "\n");
     fprintf(csd, ";Section 1 - Instr 101 - Sine Grain\n");
@@ -230,6 +244,47 @@ int main() {
 		//the following expression could be reduced, but I've left it this way to hopefully make the logic clear
 		float grainInterval = ((rand() % 1000)/999.) * ((1 / density) * 2);
 		currentTime += grainInterval;
+	}
+    */
+
+    //For Instr 103 - Audio File	
+    //will need to adjust the density time (?) to make the audio file sound more legible, less dense, bigger grains
+	fprintf(csd, "\n");
+    fprintf(csd, ";Section 3 - Instr 103 - AudioFile\n");
+    while (currentTime1 <= maxGrainTime1) {
+		duration = getValueFromTendencyMask(currentTime1/maxGrainTime1, minDurEnv, maxDurEnv);
+
+		volume = getValueFromTendencyMask(currentTime1/maxGrainTime1, minVolumeEnv, maxVolumeEnv);
+		
+        float pitch2 = getValueFromTendencyMask(currentTime1/maxGrainTime1, minPitchEnv2, maxPitchEnv2);
+		carFreq = midiToFrequency(pitch2);
+
+        float pitchfrq2 = pitch2 + 0.5; //frq2
+        float pitchfrq3 = pitch2 - 0.5; //frq3
+        
+        float sample = 4; //will need to randomize between 4 and 5 if we want to pick from different samples
+        
+        int envfn = 7; //will need to randomize between 3, 6, 7, 8 at some point
+
+		//if you're concerned about equal loudness panning (and you should be),
+		//don't worry; I'm taking the square root in the orchestra file
+		pan = getValueFromTendencyMask(currentTime1/maxGrainTime1, minPanEnv, maxPanEnv);
+
+		//last step is that we format all of these parameters into an instrument call and print to our csd file
+		//remember that 2 never changes; it is our function table (defined in the f2 statement above)
+
+		fprintf(csd, "i103 %f %f %f %f %f %d %f %f %f\n", currentTime1, duration, volume, carFreq, sample, envfn, pitchfrq2, pitchfrq3, pan);
+		
+		//interpolate the current density and use it to determine time until next grain
+		density = interpolate(currentTime1 / maxGrainTime1, densityEnv);
+
+		//calculate next grain start time
+		//(1 / density) changes grains per second into seconds per grain, and seconds is the unit we need
+		//if we want that value to be our average density (and we do), we can choose a value between 0 and twice our average density
+		//by definition, this results in an average that is our desired average
+		//the following expression could be reduced, but I've left it this way to hopefully make the logic clear
+		float grainInterval1 = ((rand() % 1000)/999.) * ((1 / density) * 2);
+		currentTime1 += grainInterval1;
 	}
 	fprintf(csd, "</CsScore>\n");
 	fprintf(csd, "</CsoundSynthesizer>\n");
