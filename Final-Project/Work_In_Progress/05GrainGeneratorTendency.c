@@ -1,0 +1,224 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+//declaring functions that will be defined below main()
+float midiToFrequency(float midi);
+float interpolate(float index, float envelope[][2]);
+float getValueFromTendencyMask(float index, float minEnvelope[][2], float maxEnvelope[][2]);
+
+int main() {
+	//seeding our random numbers with current time, so that the output will be different each time it is compiled
+	srand(time(NULL));
+
+	//open file to write to
+	FILE *csd;
+	csd = fopen("myScore.csd", "w");
+
+	fprintf(csd, "<CsoundSynthesizer>\n");
+	fprintf(csd, "<CsInstruments>\n");
+
+	//insert contents of orchestra file
+	FILE *orc;
+	if ((orc = fopen("final-houge.orc", "r")) == NULL) {
+		printf("can't open file\n");
+		return 1;
+	} else {
+		int c;
+		while ((c = getc(orc)) != EOF)
+			putc(c, csd);
+		fclose(orc);
+	}
+
+	fprintf(csd, "\n</CsInstruments>\n");
+
+	//score section
+
+	fprintf(csd, "<CsScore>\n");
+	//manually printing the function tables required by the instruments
+	//(see Csound documentation for more info)
+	fprintf(csd, "f1 0 4096 10 1\n");
+	fprintf(csd, "f2 0 4096 19 0.5 1 0 0\n");
+	fprintf(csd, "s\n");
+
+	//you can set up a tendency mask by defining two lines that indicate an upper and lower boundary for some variable
+	//these lines can be defined as a list of breakpoints (coordinates)
+	//for each desired value, first interpolate the corresponding value for each line, then pick a random value between them
+	//note that you must specify size of second dimension when defining a 2 dimensional array
+	float minVolumeEnv[][2] = { {0., -60.},
+								{0.5, -48.},
+								{1., -60.},
+								{-1, -1} };
+	float maxVolumeEnv[][2] = { {0., -48.},
+								{0.5, -12.},
+								{1., -18.},
+								{-1, -1} };
+
+	//adhering to the convention of left = 0.0, right = 1.0
+	float minPanEnv[][2] = { {0., 0.5},
+								{0.4, 0.},
+								{1., 0.5},
+								{-1, -1} };
+	float maxPanEnv[][2] = { {0., 0.5},
+								{0.6, 1.},
+								{1., 0.5},
+								{-1, -1} };
+
+	float minDurEnv[][2] = { {0., 0.001},
+								{0.5, 0.01},
+								{0.7, 0.25},
+								{1., 0.001},
+								{-1, -1} };
+	float maxDurEnv[][2] = { {0., 0.002},
+								{0.5, 0.02},
+								{0.8, 0.5},
+								{1., 0.005},
+								{-1, -1} };
+
+	//specifying pitch as MIDI values for convenience 
+	//and also to make sure we get exponential as opposed to linear mapping
+	float minPitchEnv[][2] = { {0., 96.},
+								{0.5, 84.},
+								{0.7, 69.},
+								{0.87, 72.},
+								{0.9, 72.},
+								{1., 69.},
+								{-1, -1} };
+	float maxPitchEnv[][2] = { {0., 96.},
+								{0.5, 96.},
+								{0.6, 69.},
+								{0.65, 108.},
+								{0.86, 72.},
+								{0.915, 72.},
+								{1., 69.},
+								{-1, -1} };
+
+	//index of modulation, determining amplitude of sidebands ("brightness")
+	float minIOfMEnv[][2] = { {0., 0.},
+								{0.4, 1.},
+								{0.75, 10.},
+								{0.85, 3.},
+								{1., 0.},
+								{-1, -1} };
+	float maxIOfMEnv[][2] = { {0., 1.},
+								{0.55, 2.},
+								{0.65, 20.},
+								{0.8, 3.},
+								{0.9, 15.},
+								{0.91, 1.5},
+								{0.935, 4.},
+								{0.95, 1.5},
+								{1., 1.},
+								{-1, -1} };
+
+	//carrier to modulator ratio, determining spectrum of FM sound
+	float minCToMEnv[][2] = { {0., 0.5},
+								{0.4, 0.5},
+								{0.7, 10.},
+								{0.725, 0.1},
+								{0.875, 5.},
+								{0.9, 0.2},
+								{1., 0.15},
+								{-1, -1} };
+	float maxCToMEnv[][2] = { {0., 1.5},
+								{0.4, 1.6},
+								{0.6, 25.},
+								{0.75, 0.2},
+								{1., 0.5},
+								{-1, -1} };
+	//in this implementation, density is already an average value, 
+	//so we don't need to specify min/max density
+	float densityEnv[][2] = { {0., 10.},
+								{0.35, 300.},
+								{0.9, 100.},
+								{1., 2.},
+								{-1, -1} };
+
+
+	float maxGrainTime = 60.; //give us 60 seconds of sound
+	float currentTime = 0.; //first grain at time 0.
+	float startTime, duration, volume, carFreq, modFreq, indexOfModulation, cToM, pan, density;
+	while (currentTime <= maxGrainTime) {
+		duration = getValueFromTendencyMask(currentTime/maxGrainTime, minDurEnv, maxDurEnv);
+
+		volume = getValueFromTendencyMask(currentTime/maxGrainTime, minVolumeEnv, maxVolumeEnv);
+
+		float pitch = getValueFromTendencyMask(currentTime/maxGrainTime, minPitchEnv, maxPitchEnv);
+		carFreq = midiToFrequency(pitch);
+
+		cToM = getValueFromTendencyMask(currentTime/maxGrainTime, minCToMEnv, maxCToMEnv);
+		modFreq = carFreq / cToM; //basic FM stuff, solving for the modulator frequency by using the Carrier to Modulator ratio specified above
+		
+		indexOfModulation = getValueFromTendencyMask(currentTime/maxGrainTime, minIOfMEnv, maxIOfMEnv);
+
+		//if you're concerned about equal loudness panning (and you should be),
+		//don't worry; I'm taking the square root in the orchestra file
+		pan = getValueFromTendencyMask(currentTime/maxGrainTime, minPanEnv, maxPanEnv);
+
+		//last step is that we format all of these parameters into an instrument call and print to our csd file
+		//remember that 2 never changes; it is our function table (defined in the f2 statement above)
+
+		fprintf(csd, "i102 %f %f %f %f %f %f 2 %f\n", currentTime, duration, volume, carFreq, modFreq, indexOfModulation, pan);
+		
+		//interpolate the current density and use it to determine time until next grain
+		density = interpolate(currentTime / maxGrainTime, densityEnv);
+
+		//calculate next grain start time
+		//(1 / density) changes grains per second into seconds per grain, and seconds is the unit we need
+		//if we want that value to be our average density (and we do), we can choose a value between 0 and twice our average density
+		//by definition, this results in an average that is our desired average
+		//the following expression could be reduced, but I've left it this way to hopefully make the logic clear
+		float grainInterval = ((rand() % 1000)/999.) * ((1 / density) * 2);
+		currentTime += grainInterval;
+	}
+
+
+	fprintf(csd, "</CsScore>\n");
+	fprintf(csd, "</CsoundSynthesizer>\n");
+
+	fprintf(csd, "\n");
+
+	fclose(csd);
+
+	//system("csound myScore.csd -a -o test.aif -O null && open -a Audacity test.aif");
+	//system("open -a Audacity test.aif");
+	system("csound myScore.csd -odac -O null");
+	//system("csound myScore.csd -odac");
+
+	return 0;	
+}
+
+float midiToFrequency(float midi) {
+	float frequency = 440. * pow(2, ((midi - 69) / 12));
+	return frequency;
+}
+
+float interpolate(float index, float envelope[][2]) {
+	int nextBP = 1; // BP for breakpoint
+
+	while (envelope[nextBP][0] < index && envelope[nextBP][0] >= 0.) {
+		nextBP++;
+	}
+
+	float lastX = envelope[nextBP - 1][0];
+	float lastY = envelope[nextBP - 1][1];
+	float nextX = envelope[nextBP][0];
+	float nextY = envelope[nextBP][1];
+	
+	float percentageThroughWholeThing = index;
+
+	float percentageThroughCurrentSegment = (percentageThroughWholeThing - lastX) / (nextX - lastX);
+
+	float interpolatedValue = (nextY - lastY) * percentageThroughCurrentSegment + lastY;
+	return interpolatedValue;
+}
+
+float getValueFromTendencyMask(float index, float minEnvelope[][2], float maxEnvelope[][2]) {
+	float minValue = interpolate(index, minEnvelope);
+	float maxValue = interpolate(index, maxEnvelope);
+	float value = (maxValue - minValue) * ((rand() % 1000)/999.) + minValue;
+	return value;
+}
+
+
