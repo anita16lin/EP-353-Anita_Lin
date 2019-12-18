@@ -42,12 +42,9 @@ kpre init p4
 kpost init p5
 kshap1 init p6
 kshap2 init p7
-ipan = p8
 aout distort1 gadist, kpre, kpost, kshap1, kshap2, 1
-aleft = aout * sqrt(1-ipan)
-aright = aout * sqrt(ipan)
 
-outs aleft, aright
+outs aout,aout
 
 gadist = 0
 endin
