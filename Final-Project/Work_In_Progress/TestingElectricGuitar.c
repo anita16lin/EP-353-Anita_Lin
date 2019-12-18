@@ -164,7 +164,7 @@ int main() {
 								{0.9, 100.},
 								{1., 2.},
 								{-1, -1} };
-/*
+    /*
     //Start and End Time for Instr 101 - Sine
     float maxGrainTime1 = 5.; //give us 10 seconds of sound
 	float currentTime1 = 0.; //first grain at time 0.
@@ -176,14 +176,14 @@ int main() {
     //Start and End Time for Instr 103 - Audio File
 	float maxGrainTime3 = 15.; //give us 10 seconds of sound
 	float currentTime3 = 10.; //first grain at time 0.
-*/
+    */
     //Start and End Time for Instr 104 - Flanger/Distortion
 	float maxGrainTime4 = 10.; //give us 10 seconds of sound
 	float currentTime4 = 0.; //first grain at time 0.
 
     //Declare variables in Csound
     float startTime, duration, volume, carFreq, modFreq, indexOfModulation, cToM, pan, density;
-/*  
+    /*  
     //For Instr 101 - Sine Grain	
 	fprintf(csd, "\n");
     fprintf(csd, ";Section 1 - Instr 101 - Sine Grain\n");
@@ -295,7 +295,7 @@ int main() {
 		currentTime3 += grainInterval3;
 	}
 
-*/
+    */
 	fprintf(csd, "</CsScore>\n");
 	fprintf(csd, "</CsoundSynthesizer>\n");
 
@@ -315,11 +315,11 @@ int main() {
 	fprintf(csd, "\n");
     fprintf(csd, ";Section 4 - Instr 104 - Flanger + Distortion\n");
     while (currentTime4 <= maxGrainTime4) {
-		duration = getValueFromTendencyMask(currentTime4/maxGrainTime3, minDurEnv, maxDurEnv);
+		duration = getValueFromTendencyMask(currentTime4/maxGrainTime4, minDurEnv, maxDurEnv);
 
-		volume = getValueFromTendencyMask(currentTime3/maxGrainTime3, minVolumeEnv, maxVolumeEnv);
+		volume = getValueFromTendencyMask(currentTime4/maxGrainTime4, minVolumeEnv, maxVolumeEnv);
 		
-        float pitch2 = getValueFromTendencyMask(currentTime3/maxGrainTime3, minPitchEnv2, maxPitchEnv2);
+        float pitch2 = getValueFromTendencyMask(currentTime4/maxGrainTime4, minPitchEnv2, maxPitchEnv2);
 		carFreq = midiToFrequency(pitch2);
 
         float pitchfrq2 = pitch2 + 0.5; //frq2
@@ -336,18 +336,18 @@ int main() {
 		//last step is that we format all of these parameters into an instrument call and print to our csd file
 		//remember that 2 never changes; it is our function table (defined in the f2 statement above)
 
-		fprintf(csd, "i103 %f %f %f %f %f %d %f %f %f\n", currentTime3, duration, volume, carFreq, sample, envfn, pitchfrq2, pitchfrq3, pan);
+		fprintf(csd, "i103 %f %f %f %f %f %d %f %f %f\n", currentTime4, duration, volume, carFreq, sample, envfn, pitchfrq2, pitchfrq3, pan);
 		
 		//interpolate the current density and use it to determine time until next grain
-		density = interpolate(currentTime3 / maxGrainTime3, densityEnv);
+		density = interpolate(currentTime4 / maxGrainTime4, densityEnv);
 
 		//calculate next grain start time
 		//(1 / density) changes grains per second into seconds per grain, and seconds is the unit we need
 		//if we want that value to be our average density (and we do), we can choose a value between 0 and twice our average density
 		//by definition, this results in an average that is our desired average
 		//the following expression could be reduced, but I've left it this way to hopefully make the logic clear
-		float grainInterval3 = ((rand() % 1000)/999.) * ((1 / density) * 2);
-		currentTime3 += grainInterval3;
+		float grainInterval4 = ((rand() % 1000)/999.) * ((1 / density) * 2);
+		currentTime4 += grainInterval4;
 	}
 
     
