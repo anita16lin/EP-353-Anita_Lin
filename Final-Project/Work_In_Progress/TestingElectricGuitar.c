@@ -128,6 +128,21 @@ int main() {
 								{0.915, 72.},
 								{1., 69.},
 								{-1, -1} };
+	//pitch for Instr 104
+	float minPitchEnv3[][2] = { {0., 65.},
+								{0.5, 54.},
+								{0.7, 49.},
+								{0.87, 42.},
+								{0.9, 52.},
+								{1., 69.},
+								{-1, -1} };
+	float maxPitchEnv3[][2] = { {0., 55.},
+								{0.5, 44.},
+								{0.7, 29.},
+								{0.87, 22.},
+								{0.9, 42.},
+								{1., 39.},
+								{-1, -1} };
 	//index of modulation, determining amplitude of sidebands ("brightness")
 	float minIOfMEnv[][2] = { {0., 0.},
 								{0.4, 1.},
@@ -184,17 +199,17 @@ int main() {
 
 		volume = getValueFromTendencyMask(currentTime4/maxGrainTime4, minVolumeEnv, maxVolumeEnv);
 		
-        float pitch2 = getValueFromTendencyMask(currentTime4/maxGrainTime4, minPitchEnv2, maxPitchEnv2);
+        float pitch2 = getValueFromTendencyMask(currentTime4/maxGrainTime4, minPitchEnv3, maxPitchEnv3);
         carFreq = midiToFrequency(pitch2);
         float kc1 = 0.5;
         float kc2 = 0.5; //how much distortion
-        float kvrate = 6.; //will need to pick random value between 3 and 6
+        int kvrate = 4; //will need to pick random value between 3 and 6
         float reverbsend = 0.5; //how much reverb dry-wet 
 
 		//last step is that we format all of these parameters into an instrument call and print to our csd file
 		//remember that 2 never changes; it is our function table (defined in the f2 statement above)
 
-		fprintf(csd, "i104 %f %f %f %f %f %f %f %f\n", currentTime4, duration, volume, carFreq, kc1, kc2, kvrate, reverbsend);
+		fprintf(csd, "i104 %f %f %f %f %f %f %d %f\n", currentTime4, duration, volume, carFreq, kc1, kc2, kvrate, reverbsend);
 		
 		//interpolate the current density and use it to determine time until next grain
 		density = interpolate(currentTime4 / maxGrainTime4, densityEnv);
