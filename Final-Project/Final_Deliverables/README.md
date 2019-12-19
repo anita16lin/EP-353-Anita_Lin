@@ -1,15 +1,21 @@
 # User Manual
 Welcome to the **C & Csound Granularizer**! This is the documentation for this project to guide you through how to use it. Hope you enjoy!
 
+## Quickstart
+To run and compile the main program: gcc -o GG 1GrainDemo_SineFMAudio.c && ./GG && csound -odac -d -O null myScore.csd
+To run and compile the example composition: gcc -o GG 2Composition.c && ./GG && csound -odac -d -O null myScore.csd
+Please make sure you have the associated files that come in the /Final_Deliverables folder.
+
 ## Components of the Program
 ### Files
 This program contains these files:
 1. 1GrainDemo_SineFMAudio.c
-2. final-anita.orc
-3. GG
-4. hellorcb.aif
-5. myScore.csd
-6. sing.aif
+2. 2Composition.c
+3. final-anita.orc
+4. GG
+5. hellorcb.aif
+6. myScore.csd
+7. sing.aif
 
 **The main program requires all of these associated files to run.**
 You will also need to enable the csound extension in VisualStudioCode and have Csound downloaded on your computer in order to run the program in the terminal.
@@ -21,10 +27,6 @@ This program showcases three csound instruments: Sine, FM, and Audio File that u
 The main part of the program that generates the granular synthesis is 1GrainDemo_SineFMAudio.c. It prints into the myScore.csd file so that Csound can run as usual. Firstly, final-anita.orc is an orchestra file that contains all of the Csound instruments that the main program reads and prints into the myScore.csd file. Secondly, the main file prints down the score lines that makes up the bulk of the granular implementation. The headers and other formatting is also printed in the proper place. And so, myScore.csd is a regular csd file written by C that Csound can read. 
 
 1GrainDemo_SineFMAudio.c contains all the parameters of the instruments including duration, volume, pitch, pan and more. It also uses envelopes to smoothly express these parameters. 
-
-## Quickstart
-To run and compile the program: gcc -o GG 1GrainDemo_SineFMAudio.c && ./GG && csound -odac -d -O null myScore.csd
-Please make sure you have the associated files that come in the /Final_Deliverables folder.
 
 ## Things to Explore
 If you want to load your own audio file, then put the audio file (.aif files only) into the same folder as the program files. Then add this line of code into line 58: 
