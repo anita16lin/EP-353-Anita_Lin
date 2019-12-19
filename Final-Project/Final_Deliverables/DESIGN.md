@@ -12,7 +12,9 @@ I decided to make different pitch envelopes for each of the instrument so that e
 I also implemented the sine wave because I wanted to see how to implement different oscillators. Based on that, I think implementing any other csound instrument is pretty straightforward and is something I would like to do in the future. 
 
 ## Future Implementations
+
 I really tried hard to integrate global variables like distortion, delay and reverb but it was giving a bit of trouble and I did not get it working without errors in time. In the future, I would like to pursue this and see how I can implement this. 
+
 ---
 **Made by Anita Lin**
 
