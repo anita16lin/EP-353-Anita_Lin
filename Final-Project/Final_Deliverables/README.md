@@ -41,7 +41,9 @@ The main part of the program that generates the granular synthesis is 1GrainDemo
 
 ## Things to Explore
 If you want to load your own audio file, then put the audio file (.aif files only) into the same folder as the program files. Then add this line of code into line 58: 
+
 fprintf(csd, "f5 0 0 1 \"youraudiofile.aif\" 0 0 0\n");
+
 Be sure to comment out or delete line 53 that also uses ftable f5.
 
 ---
