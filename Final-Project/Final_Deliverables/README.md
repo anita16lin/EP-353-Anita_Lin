@@ -27,10 +27,11 @@ This program contains these files:
 You will also need to enable the csound extension in VisualStudioCode and have Csound downloaded on your computer in order to run the program in the terminal.
 
 ### What is it?
-**1GrainDemo_SineFMAudio.c**
+#### 1GrainDemo_SineFMAudio.c
 This program showcases three csound instruments: Sine, FM, and Audio File that uses C to create granular synthesis. It does it very ingeniously by creating very miniscule durations and printing hundreds of lines of score that would otherwise be impractical in Csound. I started from Ben Houge's implementation of granular in FM that my teacher, Akito, shared with me. The program first plays 2 seconds of the original sound without granular synthesis, and then it plays 5 seconds of the sound with granular synthesis. It first plays a good old Sine, then an FM implementation, and then two Audio files. 
 
-**2Composition.c**
+#### 2Composition.c
+
 This is a 1 min composition showcasing this program!
 
 ### Components
