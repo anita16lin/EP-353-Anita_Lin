@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-//to compile and run: gcc -o GG 3Grain3Instr.c && ./GG && csound -odac -d -O null myScore.csd
+//to compile and run: gcc -o GG 1GrainDemo_SineFMAudio.c && ./GG && csound -odac -d -O null myScore.csd
+
 //declaring functions that will be defined below main()
 float midiToFrequency(float midi);
 float interpolate(float index, float envelope[][2]);
@@ -54,6 +55,8 @@ int main() {
     fprintf(csd, "f6 0 1024 7 0 10 1 1000 1 14 0\n");
     fprintf(csd, "f7 0 1024 7 0 128 1 128 .6 512 .6 256 0\n");
     fprintf(csd, "f8 0 1024 5 .01 256 1 192 .5 256 .5 64 .01\n");
+    //Add your own audio file here: fprintf(csd, "f5 0 0 1 \"youraudiofile.aif\" 0 0 0\n");
+    //Be sure to comment out the other f5 table. 
     fprintf(csd, "s\n");
 
 	//you can set up a tendency mask by defining two lines that indicate an upper and lower boundary for some variable
@@ -198,8 +201,8 @@ int main() {
 	float currentTime2 = 12.; //first grain at time 0.
     
     //Start and End Time for Instr 103
-	float maxGrainTime3 = 27.; //give us 10 seconds of sound
-	float currentTime3 = 22.; //first grain at time 0.
+	float maxGrainTime3 = 29.; //give us 10 seconds of sound
+	float currentTime3 = 24.; //first grain at time 0.
 
     //Declare variables in Csound
     float startTime, duration, volume, carFreq, modFreq, indexOfModulation, cToM, pan, density;
@@ -276,13 +279,13 @@ int main() {
 		currentTime2 += grainInterval;
 	}
     
-
     //For Instr 103 - Audio File	
     //will need to adjust the density time (?) to make the audio file sound more legible, less dense, bigger grains
 	fprintf(csd, "\n");
     fprintf(csd, ";Section 3 - Instr 103 - AudioFile\n");
     //Plays 2 Seconds of the original sound	
 	fprintf(csd,"i103 18.0 2.0 -3.0 220.0 4 6 225 215 0.806835\n");
+    fprintf(csd,"i103 20.0 2.0 -3.0 220.0 4 5 225 215 0.806835\n");
 	//Plays 5 Seconds of the granulated sound
 	while (currentTime3 <= maxGrainTime3) {
 		duration = getValueFromTendencyMask(currentTime3/maxGrainTime3, minDurEnv, maxDurEnv);
