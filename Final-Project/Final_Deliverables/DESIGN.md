@@ -9,7 +9,7 @@ For the granularizer for audio files, you can add any audio file you want by cha
 
 I decided to make different pitch envelopes for each of the instrument so that each of them can be controlled separately. I also decided to make different variables for the start and end times for each instrument so that it was easier to control which instrument is playing and to have different sections. Each **while loop** contains a separate instrument so that it can print out the score for each instrument in sections. Since Csound can playback the whole score at once through determining the start times of the score, I separated the score by instrument so that it is easier to read and understand how each instrument is being granularized.  
 
-I also implemented the sine wave because I wanted to see how to implement different oscillators. Based on that, I think implementing any other csound instrument is pretty straightforward and is something I would like to do in the future. 
+I also implemented the sine wave because I wanted to see how to implement different oscillators. Based on that, I think implementing any other csound instrument is pretty straightforward and is something I would like to do in the future. The biggest challenge was mapping the paramters in the csound instruments to the parameters in the c file and making sure they are giving and receiving the correct values.
 
 ## Future Implementations
 
