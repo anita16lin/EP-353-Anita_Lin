@@ -3,9 +3,11 @@ Welcome to the **C & Csound Granularizer**! This is the documentation for this p
 
 ## Quickstart
 To run and compile the main program: 
+
 gcc -o GG 1GrainDemo_SineFMAudio.c && ./GG && csound -odac -d -O null myScore.csd
 
 To run and compile the example composition: 
+
 gcc -o GG 2Composition.c && ./GG && csound -odac -d -O null myScore.csd
 
 Please make sure you have the associated files that come in the /Final_Deliverables folder.
